@@ -9,8 +9,8 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     env:
-      BRANCH_NAME: ${{ github.ref }}
-      SHORT_COMMIT_HASH: ${{ github.sha }}
+      BRANCH_NAME: ${{ github.ref }}#refs/heads/
+      SHORT_COMMIT_HASH: ${{ github.sha }}::7
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -19,10 +19,10 @@ jobs:
         run: npm install
 
       - name: Extract branch name
-        run: echo "${BRANCH_NAME#refs/heads/}"
+        run: echo "${BRANCH_NAME}"
       
       - name: Extract short commit hash
-        run: echo "${SHORT_COMMIT_HASH::7}"
+        run: echo "${SHORT_COMMIT_HASH}"
 
       - name: Login to Docker Hub
         uses: docker/login-action@v3
@@ -34,4 +34,4 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           push: true
-          tags: ${{ secrets.DOCKERHUB_REPO }}:${{ env.branch }}-${{ env.hash }}
+          tags: ${{ secrets.DOCKERHUB_REPO }}:${{ env.BRANCH_NAME }}-${{ env.SHORT_COMMIT_HASH }}
