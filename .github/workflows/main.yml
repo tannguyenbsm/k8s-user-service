@@ -8,26 +8,21 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      BRANCH_NAME: ${{ github.ref }}
+      SHORT_COMMIT_HASH: ${{ github.sha }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Install
         run: npm install
+
+      - name: Extract branch name
+        run: echo "${BRANCH_NAME#refs/heads/}"
       
-      - name: Get Branch
-        id: branch
-        run: echo "git_branch=${GITHUB_REF#refs/heads/}" >> $GITHUB_BRANCH
-
-      - name: Check Branch
-        run: echo "${{ env.branch }}"
-
-      - name: Get Hash
-        id: hash
-        run: echo "git_hash=$(git rev-parse --short "$GITHUB_SHA")" >> $GITHUB_HASH
-
-      - name: Check Hash
-        run: echo "${{ env.hash }}"
+      - name: Extract short commit hash
+        run: echo "${SHORT_COMMIT_HASH::7}"
 
       - name: Login to Docker Hub
         uses: docker/login-action@v3
